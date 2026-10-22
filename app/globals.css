@@ -1,0 +1,380 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #1e4e18;
+  --color-brand-dark: #143a12;
+  --color-brand-deep: #0b1f12;
+  --color-lime: #c9f158;
+  --color-mint: #57cc99;
+  --color-cream: #fafaf7;
+  --color-surface: #ffffff;
+  --color-ink: #111813;
+  --color-muted: #55665b;
+  --color-border: #e2e6e2;
+  --font-sans: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Enforce strict sharp corners everywhere across the entire website */
+*, *::before, *::after {
+  border-radius: 0px !important;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Hero title headline: strictly Instrument Sans, 68px size, 400 weight */
+.hero-headline {
+  font-family: var(--font-heading) !important;
+  font-size: 68px !important;
+  font-weight: 400 !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.02em !important;
+}
+
+@media (max-width: 640px) {
+  .hero-headline {
+    font-size: clamp(26px, 7.2vw, 34px) !important;
+    line-height: 1.16 !important;
+    letter-spacing: -0.015em !important;
+  }
+}
+
+/* Section headlines: strictly Instrument Sans, 20px size, 400 weight */
+h2, h3, h4, h5, h6, .section-headline {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+/* Section titles on top of sections: Instrument Sans, authoritative 36px (28px mobile), 400 weight */
+.section-title {
+  font-family: var(--font-heading) !important;
+  font-size: 36px !important;
+  font-weight: 400 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.02em !important;
+}
+
+@media (max-width: 640px) {
+  .section-title {
+    font-size: 28px !important;
+    line-height: 1.25 !important;
+  }
+}
+
+.about-bento-headline {
+  font-family: var(--font-heading) !important;
+  font-size: 36px !important;
+  font-weight: 400 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.02em !important;
+}
+
+@media (max-width: 640px) {
+  .about-bento-headline {
+    font-size: 28px !important;
+    line-height: 1.25 !important;
+  }
+}
+
+/* Subtext & body text: strictly Nunito, 14px size, 400 weight */
+p, .subtext {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.65;
+}
+
+@layer components {
+  .container-x {
+    @apply mx-auto w-full max-w-[1536px] px-4 sm:px-6 lg:px-8 xl:px-10;
+  }
+
+  /* All CTA buttons share the exact same navbar Apply Now color (#c9f158 / lime), dark text, sharp corners, Nunito 14px */
+  .btn-cta {
+    background-color: var(--color-lime);
+    color: var(--color-brand-deep);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1;
+    padding: 12px 24px;
+    border-radius: 0px !important;
+    border: 1px solid var(--color-lime);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .btn-cta:hover {
+    background-color: #0b1f12;
+    color: #c9f158;
+    border-color: #0b1f12;
+  }
+
+  /* When inside dark sections, hover to white */
+  .btn-cta-dark-context:hover {
+    background-color: #ffffff;
+    color: var(--color-brand-deep);
+    border-color: #ffffff;
+  }
+
+  /* Secondary minimal button: sharp corners, 1px border */
+  .btn-secondary {
+    background-color: transparent;
+    color: currentColor;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1;
+    padding: 12px 24px;
+    border-radius: 0px !important;
+    border: 1px solid currentColor;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  /* Minimal card container with sharp corners */
+  .card-minimal {
+    border-radius: 0px !important;
+    border: 1px solid var(--color-border);
+    background: #ffffff;
+  }
+}
+
+/* ==========================================================================
+   EXACT REFERENCE VIDEO TEXT & SCROLL ANIMATION SYSTEM
+   (Ultra-Lightweight, 100% Native 60-120FPS GPU Composite, Zero Input Lag)
+   ========================================================================== */
+
+:root {
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* 1. Word Mask & Word Inner: Word-by-word reveal (identical to reference video) */
+.reveal-words-container {
+  display: inline-block;
+}
+
+.word-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+
+.word-inner {
+  display: inline-block;
+  transform: translateY(115%);
+  opacity: 0;
+  transition: transform 0.75s var(--ease-expo),
+              opacity 0.6s var(--ease-expo);
+}
+
+.is-visible .word-inner,
+.is-visible.word-inner {
+  transform: translateY(0%);
+  opacity: 1;
+}
+
+.word-spacer {
+  display: inline-block;
+}
+
+/* 2. Text Reveal (Clean slide-up with opacity) */
+.reveal-text {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.75s var(--ease-expo),
+              transform 0.75s var(--ease-expo);
+}
+
+.reveal-text.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 3. Base Scroll Reveal with exponential luxury easing curve */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.75s var(--ease-expo),
+              transform 0.75s var(--ease-expo);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 4. Cascading Stagger Containers (.reveal-stagger) */
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s var(--ease-expo),
+              transform 0.7s var(--ease-expo);
+  transition-delay: calc(var(--stagger-i, 0) * 100ms);
+}
+
+.reveal-stagger.is-visible > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 5. Hero Load Animation Elements (Immediate on page load / refresh) */
+.reveal-hero {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.8s var(--ease-expo),
+              transform 0.8s var(--ease-expo);
+}
+
+.reveal-hero.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .word-inner,
+  .reveal,
+  .reveal-text,
+  .reveal-stagger > *,
+  .reveal-hero {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+}
+
+/* FAQ accordion styling with sharp corners */
+.faq-item {
+  border-radius: 0px !important;
+  border: 1px solid var(--color-border);
+  background: #ffffff;
+}
+
+.faq-item > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Continuous Architectural Marquee Ticker */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Continuous Smooth Announcement Cards Marquee */
+@keyframes announcementLoop {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-announcements-marquee {
+  display: flex;
+  width: max-content;
+  animation: announcementLoop 28s linear infinite;
+  will-change: transform;
+}
+
+.animate-announcements-marquee:hover,
+.animate-announcements-marquee.is-paused {
+  animation-play-state: paused !important;
+}
+
+/* 3D Flip Card System */
+.flip-card-perspective {
+  perspective: 1200px;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.75s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 0px !important;
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg);
+}
+
+.is-flipped {
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg);
+}
+
+/* Smooth FAQ Accordion Expansion */
+.faq-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-collapse.is-open {
+  grid-template-rows: 1fr;
+}
+
+.faq-collapse-inner {
+  overflow: hidden;
+}
