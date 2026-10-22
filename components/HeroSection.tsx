@@ -46,12 +46,59 @@ export default function HeroSection() {
     useRef<HTMLVideoElement>(null),
   ];
 
+  // Helper to reliably trigger muted autoplay on mobile devices (iOS Safari & Android Chrome)
+  const playVideoSafe = (video: HTMLVideoElement | null) => {
+    if (!video) return;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // Autoplay handled by interaction fallback
+      });
+    }
+  };
+
   // Coordinated entrance sequence on page load / refresh:
   // 1. Title reveals word-by-word (0ms - 550ms)
   // 2. Subtitle slides & fades in (starts at 620ms)
   // 3. CTA Buttons slide & fade in (starts at 780ms)
   // 4. Switch to video-loop crossfade mode (at 1800ms)
   useEffect(() => {
+    // Force muted and playsinline DOM attributes immediately on all video elements
+    videoRefs.forEach((ref) => {
+      const v = ref.current;
+      if (v) {
+        v.muted = true;
+        v.defaultMuted = true;
+        v.playsInline = true;
+        v.setAttribute("muted", "");
+        v.setAttribute("playsinline", "");
+        v.setAttribute("webkit-playsinline", "true");
+        v.setAttribute("x5-playsinline", "true");
+        v.setAttribute("x5-video-player-type", "h5");
+        v.setAttribute("x5-video-player-fullscreen", "false");
+      }
+    });
+
+    // Start playing the initial video immediately
+    playVideoSafe(videoRefs[0].current);
+
+    // Mobile fallback: In case strict battery-saver / iOS low power mode delays autoplay,
+    // any first touch or scroll will wake up and start playback without showing controls.
+    const wakeUpAutoplay = () => {
+      const curr = videoRefs[currentIdx].current;
+      if (curr && curr.paused) {
+        playVideoSafe(curr);
+      }
+    };
+
+    window.addEventListener("touchstart", wakeUpAutoplay, { once: true, passive: true });
+    window.addEventListener("touchend", wakeUpAutoplay, { once: true, passive: true });
+    window.addEventListener("pointerdown", wakeUpAutoplay, { once: true, passive: true });
+    window.addEventListener("scroll", wakeUpAutoplay, { once: true, passive: true });
+
     const subTimer = setTimeout(() => {
       setSubVisible(true);
     }, 620);
@@ -68,6 +115,10 @@ export default function HeroSection() {
       clearTimeout(subTimer);
       clearTimeout(ctaTimer);
       clearTimeout(loadTimer);
+      window.removeEventListener("touchstart", wakeUpAutoplay);
+      window.removeEventListener("touchend", wakeUpAutoplay);
+      window.removeEventListener("pointerdown", wakeUpAutoplay);
+      window.removeEventListener("scroll", wakeUpAutoplay);
     };
   }, []);
 
@@ -85,15 +136,21 @@ export default function HeroSection() {
   useEffect(() => {
     const activeVideo = videoRefs[currentIdx].current;
     if (activeVideo) {
-      activeVideo.currentTime = 0;
-      activeVideo.play().catch(() => {});
+      if (activeVideo.readyState >= 2 && activeVideo.currentTime > 0) {
+        activeVideo.currentTime = 0;
+      }
+      playVideoSafe(activeVideo);
     }
 
     // Preload next upcoming video
     const nextIdx = (currentIdx + 1) % heroSlides.length;
     const nextVideo = videoRefs[nextIdx].current;
-    if (nextVideo && nextVideo.preload !== "auto") {
-      nextVideo.preload = "auto";
+    if (nextVideo) {
+      nextVideo.muted = true;
+      nextVideo.defaultMuted = true;
+      if (nextVideo.preload !== "auto") {
+        nextVideo.preload = "auto";
+      }
     }
   }, [currentIdx]);
 
@@ -121,10 +178,30 @@ export default function HeroSection() {
               autoPlay
               muted
               playsInline
+              loop={false}
+              controls={false}
+              disablePictureInPicture
+              disableRemotePlayback
               preload="auto"
+              onLoadedData={(e) => {
+                const v = e.currentTarget;
+                v.muted = true;
+                v.defaultMuted = true;
+                if (idx === currentIdx && v.paused) {
+                  v.play().catch(() => {});
+                }
+              }}
+              onCanPlay={(e) => {
+                const v = e.currentTarget;
+                v.muted = true;
+                v.defaultMuted = true;
+                if (idx === currentIdx && v.paused) {
+                  v.play().catch(() => {});
+                }
+              }}
               onEnded={() => handleVideoEnded(idx)}
-              className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-1000 ease-in-out ${
-                isActive ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+              className={`pointer-events-none absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-1000 ease-in-out ${
+                isActive ? "opacity-100 z-10" : "opacity-0 z-0"
               }`}
             >
               <source src={slide.videoSrc} type="video/mp4" />

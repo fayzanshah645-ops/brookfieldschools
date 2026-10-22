@@ -24,12 +24,24 @@ export default function HeroVideoPlayer() {
 
   // Play current video when active index changes
   useEffect(() => {
+    videoRefs.forEach((ref) => {
+      const v = ref.current;
+      if (v) {
+        v.muted = true;
+        v.defaultMuted = true;
+        v.playsInline = true;
+        v.setAttribute("muted", "");
+        v.setAttribute("playsinline", "");
+        v.setAttribute("webkit-playsinline", "true");
+      }
+    });
+
     const activeVideo = videoRefs[currentIdx].current;
     if (activeVideo) {
+      activeVideo.muted = true;
+      activeVideo.defaultMuted = true;
       activeVideo.currentTime = 0;
-      activeVideo.play().catch(() => {
-        // Autoplay policy fallback
-      });
+      activeVideo.play().catch(() => {});
     }
 
     // Preload next upcoming video in the circular playlist
@@ -58,10 +70,29 @@ export default function HeroVideoPlayer() {
             muted
             loop={false}
             playsInline
+            controls={false}
+            disablePictureInPicture
+            disableRemotePlayback
             preload="auto"
+            onLoadedData={(e) => {
+              const v = e.currentTarget;
+              v.muted = true;
+              v.defaultMuted = true;
+              if (idx === currentIdx && v.paused) {
+                v.play().catch(() => {});
+              }
+            }}
+            onCanPlay={(e) => {
+              const v = e.currentTarget;
+              v.muted = true;
+              v.defaultMuted = true;
+              if (idx === currentIdx && v.paused) {
+                v.play().catch(() => {});
+              }
+            }}
             onEnded={() => handleEnded(idx)}
-            className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-1000 ease-in-out ${
-              isActive ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+            className={`pointer-events-none absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-1000 ease-in-out ${
+              isActive ? "opacity-100 z-10" : "opacity-0 z-0"
             }`}
           >
             <source src={item.src} type="video/mp4" />
